@@ -18,6 +18,17 @@ if (isset($_GET["complete"])) {
     $conn->query("UPDATE tasks SET status = 'completed' WHERE id = '$id'");
     header("Location: index.php");
 }
+
+if (isset($_GET["undo"])) {    
+    $id = $_GET["undo"];
+    $stmt = $conn->prepare("UPDATE tasks SET status = 'pending' WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->close();
+    header("Location: index.php");
+    exit();
+}
+
 $result = $conn -> query ("SELECT * FROM tasks ORDER BY id DESC");
 
 ?>
@@ -44,6 +55,7 @@ $result = $conn -> query ("SELECT * FROM tasks ORDER BY id DESC");
                 <div class="actions">
                     <a href="index.php?complete=<?php echo $row['id']; ?>">Complete</a>
                     <a href="index.php?delete=<?php echo $row['id']; ?>">Delete</a>
+                    <a href="index.php?undo=<?php echo $row['id']; ?>">Undo</a>
                 </div>
             </li>
             <?php endwhile ?>
